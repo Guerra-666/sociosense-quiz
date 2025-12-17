@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Brain, Clock, Percent, SkipForward, Zap, Trophy, Play, Sparkles } from "lucide-react";
+import { Brain, Clock, Percent, SkipForward, Trophy, Play, Sparkles } from "lucide-react";
 
 interface StartScreenProps {
   onStart: (name: string) => void;
@@ -57,18 +57,14 @@ export function StartScreen({ onStart }: StartScreenProps) {
             educativa socioemocional según la Nueva Escuela Mexicana (NEM).
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
               <Clock className="w-6 h-6 text-primary" />
-              <span className="text-xs text-muted-foreground text-center">45s por pregunta</span>
+              <span className="text-xs text-muted-foreground text-center">30s por pregunta</span>
             </div>
             <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
               <Trophy className="w-6 h-6 text-warning" />
               <span className="text-xs text-muted-foreground text-center">6 preguntas</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
-              <Zap className="w-6 h-6 text-warning" />
-              <span className="text-xs text-muted-foreground text-center">Ronda bonus</span>
             </div>
             <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
               <Percent className="w-6 h-6 text-success" />
@@ -89,7 +85,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 backdrop-blur-sm">
                 <Clock className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">+15 segundos</span>
+                <span className="text-muted-foreground">+5 segundos</span>
               </div>
             </div>
           </div>
@@ -118,7 +114,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
         {/* Session info */}
         <p className="text-xs sm:text-sm text-muted-foreground/70 font-display tracking-wider">
-          6 Preguntas • Ronda Bonus • Desafío Educativo
+          6 Preguntas • Desafío Educativo
         </p>
       </div>
     </div>

@@ -3,13 +3,12 @@ export interface Question {
   question: string;
   correctAnswer: string;
   options: string[];
-  isBonus?: boolean;
 }
 
 export const questions: Question[] = [
   {
     id: 1,
-    question: "¿Según la NEM cómo debe ser el proceso de desarrollo socioemocional?",
+    question: "¿Según la NEM Cómo debe ser el proceso de desarrollo socioemocional?",
     correctAnswer: "Integral y continuo, ya que deben considerarse todos los aspectos que inciden en este, como el conocimiento de sí, el sentido de pertenencia, el desarrollo de la identidad, así como de las habilidades sociales.",
     options: [
       "Integral y continuo, ya que deben considerarse todos los aspectos que inciden en este, como el conocimiento de sí, el sentido de pertenencia, el desarrollo de la identidad, así como de las habilidades sociales.",
@@ -21,9 +20,9 @@ export const questions: Question[] = [
   {
     id: 2,
     question: "¿Cuáles son los aspectos que han de promoverse para lograr el desarrollo socioemocional?",
-    correctAnswer: "El conocimiento de sí, el conocimiento de los estados afectivos, cuidado de sí mismo y de las otras personas, construcción de un proyecto de vida, habilidades sociales y educación integral en sexualidad.",
+    correctAnswer: "El conocimiento de sí, El conocimiento de los estados afectivos, Cuidado de sí mismo y de las otras personas, Construcción de un proyecto de vida, Habilidades sociales y Educación integral en sexualidad.",
     options: [
-      "El conocimiento de sí, el conocimiento de los estados afectivos, cuidado de sí mismo y de las otras personas, construcción de un proyecto de vida, habilidades sociales y educación integral en sexualidad.",
+      "El conocimiento de sí, El conocimiento de los estados afectivos, Cuidado de sí mismo y de las otras personas, Construcción de un proyecto de vida, Habilidades sociales y Educación integral en sexualidad.",
       "Únicamente el rendimiento académico y las calificaciones.",
       "Solo las habilidades deportivas y artísticas.",
       "La memorización de contenidos y la disciplina estricta."
@@ -31,7 +30,7 @@ export const questions: Question[] = [
   },
   {
     id: 3,
-    question: "¿Cuál es el proceso por el cual se propicia que niñas, niños y adolescentes (NNA) desarrollen de manera gradual las habilidades que les permitan comprender y regular sus emociones?",
+    question: "¿Cuál es el proceso por el cual se propicia que niñas, niños y adolescentes (NNA) desarrollen de manera gradual, las habilidades que les permitan comprender y regular sus emociones?",
     correctAnswer: "La Educación Socioemocional",
     options: [
       "La Educación Socioemocional",
@@ -53,7 +52,7 @@ export const questions: Question[] = [
   },
   {
     id: 5,
-    question: "Para garantizar la convivencia pacífica, el bienestar y construir ambientes libres de violencia en las escuelas ¿qué es necesario que se priorice en estos entornos?",
+    question: "Para garantizar la convivencia pacífica, el bienestar y construir ambientes libres de violencia en las escuelas ¿que es necesario que se priorice en estos entornos?",
     correctAnswer: "Un trato digno, cordial y respetuoso en las escuelas, así como favorecerlos en las familias y en las comunidades.",
     options: [
       "Un trato digno, cordial y respetuoso en las escuelas, así como favorecerlos en las familias y en las comunidades.",
@@ -64,7 +63,7 @@ export const questions: Question[] = [
   },
   {
     id: 6,
-    question: "Garantizar un trato digno, cordial y respetuoso en las escuelas ¿de qué manera impacta al bienestar de los NNA?",
+    question: "Garantizar Un trato digno, cordial y respetuoso en las escuelas ¿de qué manera impacta al bienestar de los NNA?",
     correctAnswer: "Contribuye al desarrollo de la personalidad, la confianza, el bienestar emocional, así como a eliminar expresiones de exclusión, discriminación y estereotipos.",
     options: [
       "Contribuye al desarrollo de la personalidad, la confianza, el bienestar emocional, así como a eliminar expresiones de exclusión, discriminación y estereotipos.",
@@ -74,19 +73,6 @@ export const questions: Question[] = [
     ]
   }
 ];
-
-export const bonusQuestion: Question = {
-  id: 7,
-  question: "RONDA BONUS: ¿Qué elementos son fundamentales para crear un ambiente escolar que favorezca el desarrollo socioemocional integral de los estudiantes?",
-  correctAnswer: "El respeto, la valoración, el cuidado, un ambiente libre de violencia, y el reconocimiento de todos los aspectos que inciden en el desarrollo socioemocional.",
-  options: [
-    "El respeto, la valoración, el cuidado, un ambiente libre de violencia, y el reconocimiento de todos los aspectos que inciden en el desarrollo socioemocional.",
-    "Solo la infraestructura física del plantel educativo.",
-    "Únicamente los recursos tecnológicos disponibles.",
-    "La cantidad de tareas y exámenes aplicados."
-  ],
-  isBonus: true
-};
 
 export function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];

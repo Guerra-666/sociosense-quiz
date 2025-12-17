@@ -8,7 +8,6 @@ type GameState = "start" | "playing" | "results";
 interface GameResults {
   score: number;
   correctAnswers: number;
-  bonusCorrect: boolean | null;
   answers: boolean[];
   totalTime: number;
 }
@@ -19,7 +18,6 @@ const Index = () => {
   const [results, setResults] = useState<GameResults>({
     score: 0,
     correctAnswers: 0,
-    bonusCorrect: null,
     answers: [],
     totalTime: 0,
   });
@@ -32,17 +30,16 @@ const Index = () => {
   const handleGameEnd = (
     score: number,
     correctAnswers: number,
-    bonusCorrect: boolean | null,
     answers: boolean[],
     totalTime: number
   ) => {
-    setResults({ score, correctAnswers, bonusCorrect, answers, totalTime });
+    setResults({ score, correctAnswers, answers, totalTime });
     setGameState("results");
   };
 
   const handleRestart = () => {
     setPlayerName("");
-    setResults({ score: 0, correctAnswers: 0, bonusCorrect: null, answers: [], totalTime: 0 });
+    setResults({ score: 0, correctAnswers: 0, answers: [], totalTime: 0 });
     setGameState("start");
   };
 
@@ -56,7 +53,6 @@ const Index = () => {
           score={results.score}
           correctAnswers={results.correctAnswers}
           totalQuestions={6}
-          bonusCorrect={results.bonusCorrect}
           answers={results.answers}
           totalTime={results.totalTime}
           onRestart={handleRestart}

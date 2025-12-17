@@ -10,7 +10,6 @@ interface ResultsScreenProps {
   score: number;
   correctAnswers: number;
   totalQuestions: number;
-  bonusCorrect: boolean | null;
   answers: boolean[];
   totalTime: number;
   onRestart: () => void;
@@ -27,7 +26,6 @@ export function ResultsScreen({
   score,
   correctAnswers,
   totalQuestions,
-  bonusCorrect,
   answers,
   totalTime,
   onRestart,
@@ -348,25 +346,6 @@ export function ResultsScreen({
               />
             ))}
           </div>
-
-          {/* Bonus Result */}
-          {bonusCorrect !== null && (
-            <div className={cn(
-              "flex items-center justify-center gap-2 p-3 rounded-xl backdrop-blur-sm border-2",
-              bonusCorrect
-                ? "bg-success/15 border-success/40 text-success"
-                : "bg-destructive/15 border-destructive/40 text-destructive"
-            )}>
-              {bonusCorrect ? (
-                <CheckCircle2 className="w-5 h-5" />
-              ) : (
-                <XCircle className="w-5 h-5" />
-              )}
-              <span className="text-sm font-medium">
-                Ronda Bonus: {bonusCorrect ? "¡Correcta! (+200 pts)" : "Incorrecta"}
-              </span>
-            </div>
-          )}
 
           {/* Answers breakdown */}
           <div className="space-y-3">

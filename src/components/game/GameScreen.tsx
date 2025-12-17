@@ -1,13 +1,13 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { GameHeader } from "./GameHeader";
 import { Timer } from "./Timer";
 import { Wildcards, WildcardsState } from "./Wildcards";
 import { QuestionCard } from "./QuestionCard";
-import { questions, bonusQuestion, shuffleArray } from "@/data/questions";
+import { questions, shuffleArray } from "@/data/questions";
 import { toast } from "sonner";
 
 interface GameScreenProps {
-  onGameEnd: (score: number, correct: number, bonusCorrect: boolean | null, answers: boolean[], totalTime: number) => void;
+  onGameEnd: (score: number, correct: number, answers: boolean[], totalTime: number) => void;
 }
 
 export function GameScreen({ onGameEnd }: GameScreenProps) {
@@ -15,10 +15,9 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
   const [score, setScore] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [timerKey, setTimerKey] = useState(0);
-  const [timerDuration, setTimerDuration] = useState(45);
+  const [timerDuration, setTimerDuration] = useState(30);
   const [isPaused, setIsPaused] = useState(false);
   const [eliminatedOptions, setEliminatedOptions] = useState<string[]>([]);
-  const [isBonus, setIsBonus] = useState(false);
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [startTime] = useState(Date.now());
   const [wildcards, setWildcards] = useState<WildcardsState>({
@@ -27,10 +26,10 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     extraTime: true,
   });
 
-  const currentQuestion = isBonus ? bonusQuestion : questions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
   const totalQuestions = questions.length;
 
-  const resetTimer = useCallback((duration: number = 45) => {
+  const resetTimer = useCallback((duration: number = 30) => {
     setTimerDuration(duration);
     setTimerKey((prev) => prev + 1);
     setIsPaused(false);
@@ -40,16 +39,13 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     (isCorrect: boolean) => {
       setIsPaused(true);
 
-      // Track answer for regular questions (not bonus)
-      if (!isBonus) {
-        setAnswers((prev) => [...prev, isCorrect]);
-      }
+      // Track answer
+      setAnswers((prev) => [...prev, isCorrect]);
 
       if (isCorrect) {
-        const points = isBonus ? 200 : 100;
-        setScore((prev) => prev + points);
-        if (!isBonus) setCorrectAnswers((prev) => prev + 1);
-        toast.success(isBonus ? "¡Bonus correcto! +200 pts" : "¡Correcto! +100 pts", {
+        setScore((prev) => prev + 100);
+        setCorrectAnswers((prev) => prev + 1);
+        toast.success("¡Correcto! +100 pts", {
           duration: 1500,
         });
       } else {
@@ -57,48 +53,38 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
       }
 
       setTimeout(() => {
-        if (isBonus) {
-          const totalTime = Math.floor((Date.now() - startTime) / 1000);
-          onGameEnd(score + (isCorrect ? 200 : 0), correctAnswers, isCorrect, answers, totalTime);
-        } else if (currentQuestionIndex < totalQuestions - 1) {
+        if (currentQuestionIndex < totalQuestions - 1) {
           setCurrentQuestionIndex((prev) => prev + 1);
           setEliminatedOptions([]);
           resetTimer();
         } else {
-          setIsBonus(true);
-          setEliminatedOptions([]);
-          resetTimer();
-          toast.info("¡Ronda Bonus! ¡Puntos dobles!", { duration: 2000 });
+          const totalTime = Math.floor((Date.now() - startTime) / 1000);
+          const finalAnswers = [...answers, isCorrect];
+          onGameEnd(score + (isCorrect ? 100 : 0), correctAnswers + (isCorrect ? 1 : 0), finalAnswers, totalTime);
         }
       }, 1500);
     },
-    [currentQuestionIndex, totalQuestions, isBonus, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]
+    [currentQuestionIndex, totalQuestions, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]
   );
 
   const handleTimeUp = useCallback(() => {
     toast.error("¡Se acabó el tiempo!", { duration: 1500 });
 
-    // Track as incorrect answer for regular questions
-    if (!isBonus) {
-      setAnswers((prev) => [...prev, false]);
-    }
+    // Track as incorrect answer
+    setAnswers((prev) => [...prev, false]);
 
     setTimeout(() => {
-      if (isBonus) {
-        const totalTime = Math.floor((Date.now() - startTime) / 1000);
-        onGameEnd(score, correctAnswers, false, answers, totalTime);
-      } else if (currentQuestionIndex < totalQuestions - 1) {
+      if (currentQuestionIndex < totalQuestions - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
         setEliminatedOptions([]);
         resetTimer();
       } else {
-        setIsBonus(true);
-        setEliminatedOptions([]);
-        resetTimer();
-        toast.info("¡Ronda Bonus! ¡Puntos dobles!", { duration: 2000 });
+        const totalTime = Math.floor((Date.now() - startTime) / 1000);
+        const finalAnswers = [...answers, false];
+        onGameEnd(score, correctAnswers, finalAnswers, totalTime);
       }
     }, 1500);
-  }, [currentQuestionIndex, totalQuestions, isBonus, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]);
+  }, [currentQuestionIndex, totalQuestions, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]);
 
   const handleFiftyFifty = useCallback(() => {
     if (!wildcards.fiftyFifty || isPaused) return;
@@ -116,36 +102,29 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
   const handleSkip = useCallback(() => {
     if (!wildcards.skip || isPaused) return;
 
-    // Track as incorrect answer when skipping regular questions
-    if (!isBonus) {
-      setAnswers((prev) => [...prev, false]);
-    }
+    // Track as incorrect answer when skipping
+    setAnswers((prev) => [...prev, false]);
 
     setWildcards((prev) => ({ ...prev, skip: false }));
     toast.success("Pregunta saltada", { duration: 1500 });
 
-    if (isBonus) {
-      const totalTime = Math.floor((Date.now() - startTime) / 1000);
-      onGameEnd(score, correctAnswers, null, answers, totalTime);
-    } else if (currentQuestionIndex < totalQuestions - 1) {
+    if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setEliminatedOptions([]);
       resetTimer();
     } else {
-      setIsBonus(true);
-      setEliminatedOptions([]);
-      resetTimer();
-      toast.info("¡Ronda Bonus! ¡Puntos dobles!", { duration: 2000 });
+      const totalTime = Math.floor((Date.now() - startTime) / 1000);
+      const finalAnswers = [...answers, false];
+      onGameEnd(score, correctAnswers, finalAnswers, totalTime);
     }
-  }, [wildcards.skip, isPaused, isBonus, currentQuestionIndex, totalQuestions, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]);
+  }, [wildcards.skip, isPaused, currentQuestionIndex, totalQuestions, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]);
 
   const handleExtraTime = useCallback(() => {
     if (!wildcards.extraTime || isPaused) return;
 
     setWildcards((prev) => ({ ...prev, extraTime: false }));
-    setTimerDuration((prev) => prev + 15);
-    setTimerKey((prev) => prev + 1);
-    toast.success("+15 segundos añadidos", { duration: 2000 });
+    setTimerDuration((prev) => prev + 5);
+    toast.success("+5 segundos añadidos", { duration: 2000 });
   }, [wildcards.extraTime, isPaused]);
 
   return (
@@ -155,7 +134,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
           score={score}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={totalQuestions}
-          isBonus={isBonus}
+          isBonus={false}
         />
 
         <div className="flex flex-col items-center mb-6">
@@ -177,7 +156,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
 
         <div className="flex-1 flex items-center justify-center pb-8">
           <QuestionCard
-            key={isBonus ? "bonus" : currentQuestionIndex}
+            key={currentQuestionIndex}
             question={currentQuestion}
             onAnswer={handleAnswer}
             eliminatedOptions={eliminatedOptions}

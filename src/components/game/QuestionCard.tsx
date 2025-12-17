@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Question, shuffleArray } from "@/data/questions";
-import { CheckCircle2, XCircle, Zap } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 interface QuestionCardProps {
   question: Question;
@@ -63,19 +63,12 @@ export function QuestionCard({
   return (
     <div className="w-full max-w-4xl mx-auto animate-fade-in">
       <div className="game-card rounded-2xl p-6 sm:p-8 mb-6">
-        {question.isBonus && (
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Zap className="w-6 h-6 text-warning" />
-            <span className="font-game text-warning text-lg">¡PUNTOS DOBLES!</span>
-            <Zap className="w-6 h-6 text-warning" />
-          </div>
-        )}
         <h2 className="text-lg sm:text-xl md:text-2xl text-foreground font-medium leading-relaxed text-center">
           {question.question}
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4">
         {shuffledOptions.map((option, index) => (
           <Button
             key={index}
@@ -83,7 +76,7 @@ export function QuestionCard({
             size="option"
             onClick={() => handleSelect(option)}
             disabled={disabled || showResult || eliminatedOptions.includes(option)}
-            className={`w-full rounded-xl ${
+            className={`w-full rounded-xl h-auto py-3 sm:py-4 ${
               showResult && option === question.correctAnswer ? "celebrate" : ""
             }`}
           >
@@ -101,7 +94,7 @@ export function QuestionCard({
               >
                 {optionLabels[index]}
               </span>
-              <span className="flex-1 text-left leading-relaxed text-sm sm:text-base">
+              <span className="flex-1 text-left leading-relaxed text-sm sm:text-base whitespace-normal break-words pr-2">
                 {option}
               </span>
               {getOptionIcon(option)}
