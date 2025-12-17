@@ -9,27 +9,40 @@ interface GameResults {
   score: number;
   correctAnswers: number;
   bonusCorrect: boolean | null;
+  answers: boolean[];
+  totalTime: number;
 }
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>("start");
+  const [playerName, setPlayerName] = useState("");
   const [results, setResults] = useState<GameResults>({
     score: 0,
     correctAnswers: 0,
     bonusCorrect: null,
+    answers: [],
+    totalTime: 0,
   });
 
-  const handleStart = () => {
+  const handleStart = (name: string) => {
+    setPlayerName(name);
     setGameState("playing");
   };
 
-  const handleGameEnd = (score: number, correctAnswers: number, bonusCorrect: boolean | null) => {
-    setResults({ score, correctAnswers, bonusCorrect });
+  const handleGameEnd = (
+    score: number,
+    correctAnswers: number,
+    bonusCorrect: boolean | null,
+    answers: boolean[],
+    totalTime: number
+  ) => {
+    setResults({ score, correctAnswers, bonusCorrect, answers, totalTime });
     setGameState("results");
   };
 
   const handleRestart = () => {
-    setResults({ score: 0, correctAnswers: 0, bonusCorrect: null });
+    setPlayerName("");
+    setResults({ score: 0, correctAnswers: 0, bonusCorrect: null, answers: [], totalTime: 0 });
     setGameState("start");
   };
 
@@ -39,10 +52,13 @@ const Index = () => {
       {gameState === "playing" && <GameScreen onGameEnd={handleGameEnd} />}
       {gameState === "results" && (
         <ResultsScreen
+          playerName={playerName}
           score={results.score}
           correctAnswers={results.correctAnswers}
           totalQuestions={6}
           bonusCorrect={results.bonusCorrect}
+          answers={results.answers}
+          totalTime={results.totalTime}
           onRestart={handleRestart}
         />
       )}

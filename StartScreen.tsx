@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Brain, Clock, Percent, SkipForward, Zap, Trophy, Play, Sparkles } from "lucide-react";
+import { Brain, Sparkles, Play } from "lucide-react";
 
 interface StartScreenProps {
   onStart: (name: string) => void;
 }
 
-export function StartScreen({ onStart }: StartScreenProps) {
+const StartScreen = ({ onStart }: StartScreenProps) => {
   const [name, setName] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -16,6 +16,7 @@ export function StartScreen({ onStart }: StartScreenProps) {
       onStart(name.trim());
     }
   };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 game-grid relative overflow-hidden">
       {/* Background effects */}
@@ -39,60 +40,16 @@ export function StartScreen({ onStart }: StartScreenProps) {
         {/* Title */}
         <div className="space-y-2 sm:space-y-3 px-2">
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-foreground glow-text leading-tight">
-            Salud Integral
+            Inteligencia Emocional y Aprendizaje Significativo
           </h1>
-          <p className="text-primary font-display text-sm sm:text-base tracking-widest uppercase">
-            Juego de Concurso
-          </p>
         </div>
 
         {/* Description */}
         <div className="bg-card/70 backdrop-blur-md border-2 border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl mx-2">
           <div className="w-12 h-1 bg-gradient-to-r from-cyan-600 via-primary to-cyan-400 mx-auto rounded-full" />
-          <h2 className="font-semibold text-lg sm:text-xl text-foreground">
-            Objetivo del Juego
-          </h2>
           <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-            Reconocer los procesos y características que deben orientar la intervención
-            educativa socioemocional según la Nueva Escuela Mexicana (NEM).
+            Responde las preguntas correctamente. ¡Buena suerte!
           </p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
-              <Clock className="w-6 h-6 text-primary" />
-              <span className="text-xs text-muted-foreground text-center">45s por pregunta</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
-              <Trophy className="w-6 h-6 text-warning" />
-              <span className="text-xs text-muted-foreground text-center">6 preguntas</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
-              <Zap className="w-6 h-6 text-warning" />
-              <span className="text-xs text-muted-foreground text-center">Ronda bonus</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 backdrop-blur-sm">
-              <Percent className="w-6 h-6 text-success" />
-              <span className="text-xs text-muted-foreground text-center">3 comodines</span>
-            </div>
-          </div>
-
-          <div className="border-t border-border pt-4 sm:pt-6">
-            <h3 className="font-medium text-foreground mb-3 text-sm sm:text-base">Comodines disponibles:</h3>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 backdrop-blur-sm">
-                <Percent className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">50/50</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 backdrop-blur-sm">
-                <SkipForward className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">Saltar</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 backdrop-blur-sm">
-                <Clock className="w-4 h-4 text-primary" />
-                <span className="text-muted-foreground">+15 segundos</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Form */}
@@ -118,9 +75,11 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
         {/* Session info */}
         <p className="text-xs sm:text-sm text-muted-foreground/70 font-display tracking-wider">
-          6 Preguntas • Ronda Bonus • Desafío Educativo
+          6 Preguntas • Desafío Educativo
         </p>
       </div>
     </div>
   );
-}
+};
+
+export default StartScreen;

@@ -7,7 +7,7 @@ import { questions, bonusQuestion, shuffleArray } from "@/data/questions";
 import { toast } from "sonner";
 
 interface GameScreenProps {
-  onGameEnd: (score: number, correct: number, bonusCorrect: boolean | null) => void;
+  onGameEnd: (score: number, correct: number, bonusCorrect: boolean | null, answers: boolean[], totalTime: number) => void;
 }
 
 export function GameScreen({ onGameEnd }: GameScreenProps) {
@@ -19,6 +19,8 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [eliminatedOptions, setEliminatedOptions] = useState<string[]>([]);
   const [isBonus, setIsBonus] = useState(false);
+  const [answers, setAnswers] = useState<boolean[]>([]);
+  const [startTime] = useState(Date.now());
   const [wildcards, setWildcards] = useState<WildcardsState>({
     fiftyFifty: true,
     skip: true,
@@ -38,6 +40,11 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     (isCorrect: boolean) => {
       setIsPaused(true);
 
+      // Track answer for regular questions (not bonus)
+      if (!isBonus) {
+        setAnswers((prev) => [...prev, isCorrect]);
+      }
+
       if (isCorrect) {
         const points = isBonus ? 200 : 100;
         setScore((prev) => prev + points);
@@ -51,7 +58,8 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
 
       setTimeout(() => {
         if (isBonus) {
-          onGameEnd(score + (isCorrect ? 200 : 0), correctAnswers, isCorrect);
+          const totalTime = Math.floor((Date.now() - startTime) / 1000);
+          onGameEnd(score + (isCorrect ? 200 : 0), correctAnswers, isCorrect, answers, totalTime);
         } else if (currentQuestionIndex < totalQuestions - 1) {
           setCurrentQuestionIndex((prev) => prev + 1);
           setEliminatedOptions([]);
@@ -64,15 +72,21 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
         }
       }, 1500);
     },
-    [currentQuestionIndex, totalQuestions, isBonus, score, correctAnswers, onGameEnd, resetTimer]
+    [currentQuestionIndex, totalQuestions, isBonus, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]
   );
 
   const handleTimeUp = useCallback(() => {
     toast.error("¡Se acabó el tiempo!", { duration: 1500 });
-    
+
+    // Track as incorrect answer for regular questions
+    if (!isBonus) {
+      setAnswers((prev) => [...prev, false]);
+    }
+
     setTimeout(() => {
       if (isBonus) {
-        onGameEnd(score, correctAnswers, false);
+        const totalTime = Math.floor((Date.now() - startTime) / 1000);
+        onGameEnd(score, correctAnswers, false, answers, totalTime);
       } else if (currentQuestionIndex < totalQuestions - 1) {
         setCurrentQuestionIndex((prev) => prev + 1);
         setEliminatedOptions([]);
@@ -84,7 +98,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
         toast.info("¡Ronda Bonus! ¡Puntos dobles!", { duration: 2000 });
       }
     }, 1500);
-  }, [currentQuestionIndex, totalQuestions, isBonus, score, correctAnswers, onGameEnd, resetTimer]);
+  }, [currentQuestionIndex, totalQuestions, isBonus, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]);
 
   const handleFiftyFifty = useCallback(() => {
     if (!wildcards.fiftyFifty || isPaused) return;
@@ -92,7 +106,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
     const incorrectOptions = currentQuestion.options.filter(
       (opt) => opt !== currentQuestion.correctAnswer && !eliminatedOptions.includes(opt)
     );
-    
+
     const toEliminate = shuffleArray(incorrectOptions).slice(0, 2);
     setEliminatedOptions((prev) => [...prev, ...toEliminate]);
     setWildcards((prev) => ({ ...prev, fiftyFifty: false }));
@@ -102,11 +116,17 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
   const handleSkip = useCallback(() => {
     if (!wildcards.skip || isPaused) return;
 
+    // Track as incorrect answer when skipping regular questions
+    if (!isBonus) {
+      setAnswers((prev) => [...prev, false]);
+    }
+
     setWildcards((prev) => ({ ...prev, skip: false }));
     toast.success("Pregunta saltada", { duration: 1500 });
 
     if (isBonus) {
-      onGameEnd(score, correctAnswers, null);
+      const totalTime = Math.floor((Date.now() - startTime) / 1000);
+      onGameEnd(score, correctAnswers, null, answers, totalTime);
     } else if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setEliminatedOptions([]);
@@ -117,7 +137,7 @@ export function GameScreen({ onGameEnd }: GameScreenProps) {
       resetTimer();
       toast.info("¡Ronda Bonus! ¡Puntos dobles!", { duration: 2000 });
     }
-  }, [wildcards.skip, isPaused, isBonus, currentQuestionIndex, totalQuestions, score, correctAnswers, onGameEnd, resetTimer]);
+  }, [wildcards.skip, isPaused, isBonus, currentQuestionIndex, totalQuestions, score, correctAnswers, answers, startTime, onGameEnd, resetTimer]);
 
   const handleExtraTime = useCallback(() => {
     if (!wildcards.extraTime || isPaused) return;

@@ -1,20 +1,26 @@
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Trophy, Star, RotateCcw, CheckCircle2, XCircle, Percent, Download, Clock, Target, Brain, Award, Sparkles } from "lucide-react";
+import { Trophy, Clock, Target, Download, RotateCcw, CheckCircle, XCircle, Brain, Award } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { cn } from "@/lib/utils";
-import { questions } from "@/data/questions";
 
 interface ResultsScreenProps {
   playerName: string;
   score: number;
-  correctAnswers: number;
   totalQuestions: number;
-  bonusCorrect: boolean | null;
-  answers: boolean[];
   totalTime: number;
+  answers: boolean[];
   onRestart: () => void;
 }
+
+const questions = [
+  "¿Es la capacidad de reconocer y regular las emociones propias?",
+  "¿Qué son las emociones?",
+  "¿En qué consiste el manejo de emociones?",
+  "¿Consecuencias de no saber manejar adecuadamente las emociones?",
+  "¿Cuál es el primer paso para aprender a manejar las emociones?",
+  "¿Cuáles son los beneficios del bienestar emocional en las y los estudiantes?",
+];
 
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
@@ -22,56 +28,48 @@ const formatTime = (seconds: number) => {
   return `${mins} min ${secs} seg`;
 };
 
-export function ResultsScreen({
+const ResultsScreen = ({
   playerName,
   score,
-  correctAnswers,
   totalQuestions,
-  bonusCorrect,
-  answers,
   totalTime,
+  answers,
   onRestart,
-}: ResultsScreenProps) {
-  const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+}: ResultsScreenProps) => {
+  const percentage = Math.round((score / totalQuestions) * 100);
 
   const getGrade = () => {
     if (percentage >= 90) return { grade: "Excelente", color: "text-success" };
     if (percentage >= 80) return { grade: "Muy Bien", color: "text-primary" };
     if (percentage >= 70) return { grade: "Bien", color: "text-accent" };
     if (percentage >= 60) return { grade: "Suficiente", color: "text-muted-foreground" };
-    return { grade: "Estudia un poco más :)", color: "text-destructive" };
+    return { grade: "Estudia un poco mas :)", color: "text-destructive" };
   };
 
   const gradeInfo = getGrade();
-  const getStars = () => {
-    if (percentage >= 100) return 3;
-    if (percentage >= 70) return 2;
-    if (percentage >= 40) return 1;
-    return 0;
-  };
 
   const generatePDF = useCallback(() => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Elegant gradient header background
+    // Elegant gradient header background - más compacto
     doc.setFillColor(15, 23, 42); // Dark blue
     doc.rect(0, 0, pageWidth, 45, "F");
 
-    // Title with elegant typography
+    // Title with elegant typography - más pequeño
     doc.setTextColor(56, 189, 248); // Cyan
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
     doc.text("CERTIFICADO DE RESULTADOS", pageWidth / 2, 15, { align: "center" });
 
-    // Subtitle
+    // Subtitle - más compacto
     doc.setTextColor(250, 204, 21); // Yellow
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("Salud Integral - Nueva Escuela Mexicana", pageWidth / 2, 24, { align: "center" });
+    doc.text("Inteligencia Emocional y Aprendizaje Significativo", pageWidth / 2, 24, { align: "center" });
 
-    // Date inline
+    // Date inline - en la misma línea que la sesión
     const currentDate = new Date().toLocaleDateString("es-MX", {
       day: "numeric",
       month: "short",
@@ -79,20 +77,20 @@ export function ResultsScreen({
     });
     doc.setTextColor(148, 163, 184);
     doc.setFontSize(9);
-    doc.text(`Juego de Concurso • ${currentDate}`, pageWidth / 2, 32, { align: "center" });
+    doc.text(`Primera Sesión • ${currentDate}`, pageWidth / 2, 32, { align: "center" });
 
     // Decorative line
     doc.setDrawColor(56, 189, 248);
     doc.setLineWidth(0.5);
     doc.line(60, 38, pageWidth - 60, 38);
 
-    // Main content card with border
+    // Main content card with border - más cerca del header
     const cardY = 50;
     doc.setDrawColor(56, 189, 248);
     doc.setLineWidth(1);
     doc.roundedRect(15, cardY, pageWidth - 30, 48, 3, 3, "S");
 
-    // Player section
+    // Player section - más compacto
     doc.setTextColor(100, 100, 120);
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
@@ -103,7 +101,7 @@ export function ResultsScreen({
     doc.setFont("helvetica", "bold");
     doc.text(playerName.toUpperCase(), pageWidth / 2, cardY + 18, { align: "center" });
 
-    // Grade badge
+    // Grade badge - más compacto
     doc.setFontSize(18);
     if (percentage >= 70) {
       doc.setTextColor(34, 197, 94); // Green
@@ -118,7 +116,7 @@ export function ResultsScreen({
     doc.setFont("helvetica", "bold");
     doc.text(`${percentage}%`, pageWidth / 2, cardY + 42, { align: "center" });
 
-    // Stats boxes with visual design
+    // Stats boxes with visual design - más compacto
     const statsY = cardY + 56;
     const boxWidth = 52;
     const boxHeight = 24;
@@ -138,7 +136,7 @@ export function ResultsScreen({
     doc.text("ACIERTOS", startX + boxWidth / 2, statsY + 7, { align: "center" });
     doc.setTextColor(30, 41, 59);
     doc.setFontSize(14);
-    doc.text(`${correctAnswers}/${totalQuestions}`, startX + boxWidth / 2, statsY + 17, { align: "center" });
+    doc.text(`${score}/${totalQuestions}`, startX + boxWidth / 2, statsY + 17, { align: "center" });
 
     // Box 2 - Tiempo
     doc.setFillColor(254, 252, 232);
@@ -155,7 +153,7 @@ export function ResultsScreen({
     doc.text(formatTime(totalTime), startX + boxWidth + spacing + boxWidth / 2, statsY + 17, { align: "center" });
 
     // Box 3 - Precisión
-    const precision = Math.round((correctAnswers / totalQuestions) * 100);
+    const precision = Math.round((score / totalQuestions) * 100);
     doc.setFillColor(240, 253, 244);
     doc.roundedRect(startX + (boxWidth + spacing) * 2, statsY, boxWidth, boxHeight, 2, 2, "F");
     doc.setDrawColor(34, 197, 94);
@@ -169,7 +167,7 @@ export function ResultsScreen({
     doc.setFontSize(14);
     doc.text(`${precision}%`, startX + (boxWidth + spacing) * 2 + boxWidth / 2, statsY + 17, { align: "center" });
 
-    // Questions breakdown header
+    // Questions breakdown header - más cerca
     const questionsY = statsY + 34;
     doc.setFillColor(250, 250, 252);
     doc.rect(15, questionsY, pageWidth - 30, 10, "F");
@@ -196,7 +194,7 @@ export function ResultsScreen({
         doc.rect(15, currentY - 6, pageWidth - 30, lineHeight, "F");
       }
 
-      // Status circle with check/cross
+      // Status circle with check/cross - más pequeño
       const circleX = 21;
       const circleY = currentY - 1.5;
 
@@ -236,7 +234,7 @@ export function ResultsScreen({
       // Question text with word wrap
       doc.setTextColor(50, 50, 70);
       doc.setFont("helvetica", "normal");
-      const textLines = doc.splitTextToSize(question.question, maxWidth - 20);
+      const textLines = doc.splitTextToSize(question, maxWidth - 20);
       doc.text(textLines[0], 33, currentY);
 
       currentY += lineHeight;
@@ -260,11 +258,11 @@ export function ResultsScreen({
     doc.setTextColor(148, 163, 184);
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
-    doc.text("Salud Integral - NEM", pageWidth / 2, footerY + 3, { align: "center" });
+    doc.text("Inteligencia Emocional", pageWidth / 2, footerY + 3, { align: "center" });
 
     // Save the PDF
     doc.save(`Resultados_${playerName.replace(/\s+/g, "_")}_${Date.now()}.pdf`);
-  }, [playerName, correctAnswers, totalQuestions, totalTime, answers, percentage, gradeInfo.grade]);
+  }, [playerName, score, totalQuestions, totalTime, answers, percentage, gradeInfo.grade]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 game-grid relative overflow-hidden">
@@ -315,7 +313,7 @@ export function ResultsScreen({
             <div className="bg-secondary/50 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 text-center border border-border/50 shadow-lg">
               <Target className="w-5 h-5 sm:w-6 sm:h-6 text-primary mx-auto mb-1 sm:mb-2" />
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">
-                {correctAnswers}/{totalQuestions}
+                {score}/{totalQuestions}
               </p>
               <p className="text-[10px] sm:text-xs text-muted-foreground font-display">Aciertos</p>
             </div>
@@ -334,39 +332,6 @@ export function ResultsScreen({
               <p className="text-[10px] sm:text-xs text-muted-foreground font-display">Preguntas</p>
             </div>
           </div>
-
-          {/* Stars */}
-          <div className="flex justify-center gap-2">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`w-6 h-6 sm:w-8 sm:h-8 ${
-                  i < getStars()
-                    ? "text-warning fill-warning"
-                    : "text-muted-foreground/30"
-                }`}
-              />
-            ))}
-          </div>
-
-          {/* Bonus Result */}
-          {bonusCorrect !== null && (
-            <div className={cn(
-              "flex items-center justify-center gap-2 p-3 rounded-xl backdrop-blur-sm border-2",
-              bonusCorrect
-                ? "bg-success/15 border-success/40 text-success"
-                : "bg-destructive/15 border-destructive/40 text-destructive"
-            )}>
-              {bonusCorrect ? (
-                <CheckCircle2 className="w-5 h-5" />
-              ) : (
-                <XCircle className="w-5 h-5" />
-              )}
-              <span className="text-sm font-medium">
-                Ronda Bonus: {bonusCorrect ? "¡Correcta! (+200 pts)" : "Incorrecta"}
-              </span>
-            </div>
-          )}
 
           {/* Answers breakdown */}
           <div className="space-y-3">
@@ -388,11 +353,11 @@ export function ResultsScreen({
                   )}
                 >
                   {answers[index] ? (
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-success shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-success shrink-0 mt-0.5" />
                   ) : (
                     <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-destructive shrink-0 mt-0.5" />
                   )}
-                  <span className="text-foreground/90 leading-relaxed">{question.question}</span>
+                  <span className="text-foreground/90 leading-relaxed">{question}</span>
                 </div>
               ))}
             </div>
@@ -420,4 +385,6 @@ export function ResultsScreen({
       </div>
     </div>
   );
-}
+};
+
+export default ResultsScreen;
