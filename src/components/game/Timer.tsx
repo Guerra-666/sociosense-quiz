@@ -10,12 +10,14 @@ interface TimerProps {
 
 export function Timer({ duration, onTimeUp, isPaused, onTick }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
-  const percentage = (timeLeft / duration) * 100;
+  const [initialDuration, setInitialDuration] = useState(duration);
+  const percentage = (timeLeft / initialDuration) * 100;
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   useEffect(() => {
-    setTimeLeft(duration);
+    setTimeLeft((prev) => prev + (duration - initialDuration));
+    setInitialDuration(duration);
   }, [duration]);
 
   useEffect(() => {

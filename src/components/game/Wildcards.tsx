@@ -54,7 +54,7 @@ export function Wildcards({
         className="flex items-center gap-2"
       >
         <Clock className="w-4 h-4" />
-        <span className="hidden sm:inline">+15s</span>
+        <span className="hidden sm:inline">+5s</span>
       </Button>
     </div>
   );
